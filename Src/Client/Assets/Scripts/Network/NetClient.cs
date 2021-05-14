@@ -77,10 +77,17 @@ namespace Network
         private MemoryStream receiveBuffer = new MemoryStream(DEF_RECV_BUFFER_SIZE);
         private Queue<NetMessage> sendQueue = new Queue<NetMessage>();
 
+        /// <summary>
+        /// 正在连接
+        /// </summary>
         private bool connecting = false;
 
         private int retryTimes = 0;
+        //重试次数总和等于服务器重试次数
         private int retryTimesTotal = DEF_TRY_CONNECT_TIMES;
+        /// <summary>
+        /// 最后发送时间
+        /// </summary>
         private float lastSendTime = 0;
         private int sendOffset = 0;
 
@@ -170,13 +177,13 @@ namespace Network
 
         /// <summary>
         /// 连接
-        /// 异步连接。
+        /// 异步连接
         /// 请使用OnConnect处理连接事件 
         /// </summary>
-        /// <param name="retryTimes"></param>
-        /// <returns></returns>
+        /// <param name="times"></param>
         public void Connect(int times = DEF_TRY_CONNECT_TIMES)
         {
+            //效验逻辑
             if (this.connecting)
             {
                 return;
@@ -257,6 +264,7 @@ namespace Network
 
             if (!this.Connected)
             {
+                //判断有没有连接 没连接在连接一遍 同时生成日志
                 this.receiveBuffer.Position = 0;
                 this.sendBuffer.Position = sendOffset = 0;
 
@@ -264,7 +272,7 @@ namespace Network
                 Debug.Log("Connect Server before Send Message!");
                 return;
             }
-
+            //将message放到队列里发送出去
             sendQueue.Enqueue(message);
         
             if (this.lastSendTime == 0)
@@ -273,6 +281,7 @@ namespace Network
             }
         }
 
+        //真正的去连接
         void DoConnect()
         {
             Debug.Log("NetClient.DoConnect on " + this.address.ToString());
@@ -285,19 +294,23 @@ namespace Network
 
 
                 this.clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                //Blocking 阻塞 希望客户端连接服务器的阻塞的 能实时等待连接的结果
                 this.clientSocket.Blocking = true;
 
                 Debug.Log(string.Format("Connect[{0}] to server {1}", this.retryTimes, this.address) + "\n");
+                //异步的方式 BeginConnect  得到result对像 根据result来决定要不要去等待他
                 IAsyncResult result = this.clientSocket.BeginConnect(this.address, null, null);
+                //waitone 等待我们异步的事件完成才继续执行
                 bool success = result.AsyncWaitHandle.WaitOne(NetConnectTimeout);
                 if (success)
                 {
+                    //如果连接成功 就调用end把请求结束
                     this.clientSocket.EndConnect(result);
                 }
             }
             catch(SocketException ex)
             {
-                if(ex.SocketErrorCode == SocketError.ConnectionRefused)
+                if(ex.SocketErrorCode == SocketError.ConnectionRefused)    //捕获网络的异常 ConnectionRefused(服务器拒绝)
                 {
                     this.CloseConnection(NET_ERROR_FAIL_TO_CONNECT);
                 }
@@ -305,11 +318,12 @@ namespace Network
             }
             catch (Exception e)
             {
-                Debug.Log("DoConnect Exception:" + e.ToString() + "\n");
+                Debug.Log("DoConnect Exception:" + e.ToString() + "\n");  //常规的异常
             }
 
             if (this.clientSocket.Connected)
             {
+                //再次判断连接是否成功 成功后关闭阻塞模式 希望在游戏运行过程，使用非阻塞的
                 this.clientSocket.Blocking = false;
                 this.RaiseConnected(0, "Success");
             }
@@ -324,6 +338,11 @@ namespace Network
             this.connecting = false;
         }
 
+        /// <summary>
+        /// 保持连接
+        /// 判断连接状态
+        /// </summary>
+        /// <returns></returns>
         bool KeepConnect()
         {
             if (this.connecting)
@@ -344,7 +363,10 @@ namespace Network
             }
             return false;
         }
-
+        /// <summary>
+        /// 接收消息
+        /// </summary>
+        /// <returns></returns>
         bool ProcessRecv()
         {
             bool ret = false;
@@ -354,6 +376,7 @@ namespace Network
                 {
                     Debug.Log("this.clientSocket.Blocking = true\n");
                 }
+                //Poll 判断连接是否断开
                 bool error = this.clientSocket.Poll(0, SelectMode.SelectError);
                 if (error)
                 {
@@ -365,6 +388,7 @@ namespace Network
                 ret = this.clientSocket.Poll(0, SelectMode.SelectRead);
                 if (ret)
                 {
+                    //然后接收 接收完 把数据丢到数据缓冲区
                     int n = this.clientSocket.Receive(this.receiveBuffer.GetBuffer(), 0, this.receiveBuffer.Capacity, SocketFlags.None);
                     if (n <= 0)
                     {
@@ -384,7 +408,11 @@ namespace Network
             }
             return true;
         }
-
+       
+        /// <summary>
+        /// 发送消息
+        /// </summary>
+        /// <returns></returns>
         bool ProcessSend()
         {
             bool ret = false;
@@ -444,6 +472,10 @@ namespace Network
             return true;
         }
 
+        /// <summary>
+        /// 分发消息
+        /// 分发器单例直接分发
+        /// </summary>
         void ProceeMessage()
         {
             MessageDistributer.Instance.Distribute();
@@ -461,8 +493,10 @@ namespace Network
             {
                 if (this.ProcessRecv())
                 {
+                    //每一帧先接收 接收过程中可能会断线 所以再判断一次有没有连接 
                     if (this.Connected)
                     {
+                        //如果连接就发送消息 处理消息
                         this.ProcessSend();
                         this.ProceeMessage();
                     }

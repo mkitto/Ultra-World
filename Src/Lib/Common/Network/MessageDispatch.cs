@@ -3,8 +3,10 @@ using Common;
 
 namespace Network
 {
+    //消息分配 具体处理由分发器来做
     public class MessageDispatch<T> : Singleton<MessageDispatch<T>>
     {
+        //分发的响应 客户端用
         public void Dispatch(T sender, SkillBridge.Message.NetMessageResponse message)
         {
             if (message.userRegister != null) { MessageDistributer<T>.Instance.RaiseEvent(sender, message.userRegister); }
@@ -17,6 +19,7 @@ namespace Network
             if (message.mapEntitySync != null) { MessageDistributer<T>.Instance.RaiseEvent(sender, message.mapEntitySync); }   
         }
 
+        //分发的请求 服务器用的
         public void Dispatch(T sender, SkillBridge.Message.NetMessageRequest message)
         {
             if (message.userRegister != null) { MessageDistributer<T>.Instance.RaiseEvent(sender,message.userRegister); }

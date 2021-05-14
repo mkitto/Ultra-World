@@ -69,6 +69,7 @@ namespace Network
         /// <param name="count"></param>
         public void ReceiveData(byte[] data,int offset,int count)
         {
+            //判断数据流 超不超容量 缓存够不够 够就写到流里面去 最后数据包解析
             if(stream.Position + count > stream.Capacity)
             {
                 throw new Exception("PackageHandler write buffer overflow");
@@ -77,6 +78,8 @@ namespace Network
 
             ParsePackage();
         }
+
+        //做分包处理 如果说包没收完，不完整 或粘包 就做相应的处理
 
         /// <summary>
         /// 打包消息
@@ -124,7 +127,7 @@ namespace Network
                 int packageSize = BitConverter.ToInt32(stream.GetBuffer(), readOffset);
                 if (packageSize + readOffset + 4 <= stream.Position)
                 {//包有效
-
+                    //调用ProtoBuf的协议 
                     SkillBridge.Message.NetMessage message = UnpackMessage(stream.GetBuffer(), this.readOffset + 4, packageSize);
                     if (message == null)
                     {

@@ -13,15 +13,43 @@ namespace Network
 {
     class NetClient : MonoSingleton<NetClient>
     {
+        #region 服务器默认设置
 
-        const int DEF_POLL_INTERVAL_MILLISECONDS = 100; //default network thread hold on interval
-        const int DEF_TRY_CONNECT_TIMES = 3;            //default the number of retries the server
-        const int DEF_RECV_BUFFER_SIZE = 64 * 1024;     //default initial buffer size of recvStream
-        const int DEF_PACKAGE_HEADER_LENGTH = 4;        //default package header size
-        const int DEF_SEND_PING_INTERVAL = 30;          //default send ping package interval
-        const int NetConnectTimeout = 10000;    //default connect wait milliseconds
-        const int DEF_LOAD_WHEEL_MILLISECONDS = 1000;   //default wait some milliseconds then show load wheel
-        const int NetReconnectPeriod = 10;              //default reconnect seconds
+        /// <summary>
+        /// 默认的网络线程保持时间间隔
+        /// </summary>
+        const int DEF_POLL_INTERVAL_MILLISECONDS = 100;
+        /// <summary>
+        /// 默认为服务器重试的次数
+        /// </summary>
+        const int DEF_TRY_CONNECT_TIMES = 3;
+        /// <summary>
+        /// RecvStream的默认初始缓冲区大小
+        /// </summary>
+        const int DEF_RECV_BUFFER_SIZE = 64 * 1024;
+        /// <summary>
+        /// 默认包头大小
+        /// </summary>
+        const int DEF_PACKAGE_HEADER_LENGTH = 4;
+        /// <summary>
+        /// 默认发送ping包的时间间隔
+        /// </summary>
+        const int DEF_SEND_PING_INTERVAL = 30;
+        /// <summary>
+        /// 默认连接等待毫秒
+        /// </summary>
+        const int NetConnectTimeout = 10000;
+        /// <summary>
+        /// 默认等待几毫秒，然后显示加载轮。
+        /// </summary>
+        const int DEF_LOAD_WHEEL_MILLISECONDS = 1000;
+        /// <summary>
+        /// 默认重新连接秒数
+        /// </summary>
+        const int NetReconnectPeriod = 10;
+
+        #endregion
+
 
         public const int NET_ERROR_UNKNOW_PROTOCOL = 2;           //协议错误
         public const int NET_ERROR_SEND_EXCEPTION = 1000;       //发送异常
@@ -141,9 +169,9 @@ namespace Network
         }
 
         /// <summary>
-        /// Connect
-        /// asynchronous connect.
-        /// Please use OnConnect handle connect event 
+        /// 连接
+        /// 异步连接。
+        /// 请使用OnConnect处理连接事件 
         /// </summary>
         /// <param name="retryTimes"></param>
         /// <returns></returns>
@@ -219,7 +247,7 @@ namespace Network
 
         }
 
-        //send a Protobuf message
+        //发送一个Protobuf消息
         public void SendMessage(NetMessage message)
         {
             if (!running)

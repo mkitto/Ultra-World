@@ -24,7 +24,7 @@ namespace GameServer
         {
             network = new NetService();
             network.Init(8000);
-            HelloWorldSerivices.Instance.Init();
+           // HelloWorldSerivices.Instance.Init();
 
             //DBService.Instance.Init();
             //var a = DBService.Instance.Entities.Characters.Where(s => s.TID == 1);
@@ -38,7 +38,7 @@ namespace GameServer
             running = true;
             thread.Start();
             network.Start();
-            HelloWorldSerivices.Instance.Start();
+            //HelloWorldSerivices.Instance.Start();
 
         }
 
@@ -48,7 +48,7 @@ namespace GameServer
             running = false;
             thread.Join();
             network.Stop();
-            HelloWorldSerivices.Instance.Stop();
+           // HelloWorldSerivices.Instance.Stop();
 
         }
 

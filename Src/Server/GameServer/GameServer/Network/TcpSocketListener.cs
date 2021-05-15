@@ -95,7 +95,7 @@ namespace Network
         }
         #endregion
 
-        #region Constructors
+        #region 构造函数
         /// <summary>
         /// 监听指定地址和端口上的套接字连接.
         /// </summary>
@@ -128,7 +128,7 @@ namespace Network
         }
         #endregion
 
-        #region Public Methods
+        #region 公共方法
         /// <summary>
         /// 开始监听套接字连接
         /// </summary>
@@ -178,10 +178,10 @@ namespace Network
                 , OnSocketAccepted, args);*/
         }
         /// <summary>
-        /// Invoked when an asynchrounous accept completes.
+        /// 当一个异步接受完成时被调用。.
         /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The SocketAsyncEventArgs for the operation.</param>
+        /// <param name="sender">发件人.</param>
+        /// <param name="e">操作的SocketAsyncEventArgs.</param>
         private void OnSocketAccepted(object sender, SocketAsyncEventArgs e)
         {
             SocketError error = e.SocketError;
@@ -201,9 +201,9 @@ namespace Network
         }
         #endregion
 
-        #region Events
+        #region 事件 
         /// <summary>
-        /// Fired when a new connection is received.
+        /// 当收到一个新的连接时启动。
         /// </summary>
         public event EventHandler<Socket> SocketConnected;
         /// <summary>
@@ -218,6 +218,10 @@ namespace Network
         #endregion
 
         #region IDisposable Members
+
+        /// <summary>
+        /// 是否废弃
+        /// </summary>
         private Boolean disposed = false;
 
         ~TcpSocketListener()

@@ -69,6 +69,7 @@
     <Compile Include="Assets\Scripts\Utilities\GameUtil.cs" />
     <Compile Include="Assets\Scripts\Utilities\MonoSingleton.cs" />
     <Compile Include="Assets\Scripts\Utilities\Singleton.cs" />
+    <Compile Include="Assets\Text.cs" />
     <None Include="Assets\Shader\MyMobile VertexLit Diffuse.shader" />
     <None Include="Assets\Shader\MyMobile Particles AddNoMask Diff.shader" />
     <None Include="Assets\Shader\Lightmap\Lightmap.shader" />

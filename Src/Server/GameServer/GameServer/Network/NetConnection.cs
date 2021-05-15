@@ -32,15 +32,17 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 
+//网络连接类
+
 namespace Network
 {
     /// <summary>
-    /// A connection to our server.
+    ///与我们服务器的连接
     /// </summary>
     public class NetConnection<T>
     {
         /// <summary>
-        /// Represents a callback used to inform a listener that a ServerConnection has received data.
+        /// 代表一个回调，用于通知监听器一个ServerConnection已经收到数据。
         /// </summary>
         /// <param name="sender">The sender of the callback.</param>
         /// <param name="e">The DataEventArgs object containging the received data.</param>

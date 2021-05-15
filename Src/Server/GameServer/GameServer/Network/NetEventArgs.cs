@@ -8,7 +8,7 @@ using System.Net;
 namespace Network
 {
     /// <summary>
-    /// EventArgs class holding a Byte[].
+    /// EventArgs类持有一个Byte[]。
     /// </summary>
     public class DataEventArgs : EventArgs
     {

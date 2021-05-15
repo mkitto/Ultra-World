@@ -28,6 +28,7 @@ namespace Network
             Log.Warning("Starting Listener...");
             ServerListener.Start();
 
+            //设置线程数 
             MessageDistributer<NetConnection<NetSession>>.Instance.Start(8);
             Log.Warning("NetService Started");
         }
@@ -51,6 +52,7 @@ namespace Network
             SocketAsyncEventArgs args = new SocketAsyncEventArgs();
             NetSession session = new NetSession();
 
+            //如果验证通过，创建一个网络连接 接收时发生 断开时发生 回调
             NetConnection<NetSession> connection = new NetConnection<NetSession>(e, args,
                 new NetConnection<NetSession>.DataReceivedCallback(DataReceived),
                 new NetConnection<NetSession>.DisconnectedCallback(Disconnected), session);

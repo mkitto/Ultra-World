@@ -10,6 +10,9 @@ using SkillBridge.Message;
 
 namespace Network
 {
+    /// <summary>
+    /// 网络会话
+    /// </summary>
     class NetSession
     {
         public TUser User { get; set; }

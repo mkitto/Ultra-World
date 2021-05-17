@@ -51,6 +51,7 @@ namespace GameServer.Services
            {
                sender.Session.User = user;
 
+               //用户信息
                message.Response.userLogin.Result = Result.Success;
                message.Response.userLogin.Errormsg = "None";
                message.Response.userLogin.Userinfo = new NUserInfo();

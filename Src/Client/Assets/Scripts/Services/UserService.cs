@@ -12,12 +12,15 @@ namespace Services
 {
     class UserService : Singleton<UserService>, IDisposable
     {
+
         public UnityEngine.Events.UnityAction<Result, string> OnLogin;
         public UnityEngine.Events.UnityAction<Result, string> OnRegister;
+        public UnityEngine.Events.UnityAction<Result, string> OnCharacterCreate;
         /// <summary>
         /// 待定的消息
         /// </summary>
         NetMessage pendingMessage = null;
+
         bool connected = false;
 
         public UserService()
@@ -26,6 +29,7 @@ namespace Services
             NetClient.Instance.OnDisconnect += OnGameServerDisconnect;
             MessageDistributer.Instance.Subscribe<UserLoginResponse>(this.OnUserLogin);
             MessageDistributer.Instance.Subscribe<UserRegisterResponse>(this.OnUserRegister);
+            MessageDistributer.Instance.Subscribe<UserCreateCharacterResponse>(this.OnUserCreateCharacter);
 
 
         }
@@ -35,6 +39,7 @@ namespace Services
             //订阅用户注册响应
             MessageDistributer.Instance.Unsubscribe<UserLoginResponse>(this.OnUserLogin);
             MessageDistributer.Instance.Unsubscribe<UserRegisterResponse>(this.OnUserRegister);
+            MessageDistributer.Instance.Unsubscribe<UserCreateCharacterResponse>(this.OnUserCreateCharacter);
             NetClient.Instance.OnConnect -= OnGameServerConnect;
             NetClient.Instance.OnDisconnect -= OnGameServerDisconnect;
         }
@@ -61,13 +66,13 @@ namespace Services
         /// </summary>
         /// <param name="result">结果</param>
         /// <param name="reason">原因</param>
-        void OnGameServerConnect(int result,string reason)
+        void OnGameServerConnect(int result, string reason)
         {
             Log.InfoFormat("LoadingMesager::OnGameServerConnect :{0} reason:{1}", result, reason);
             if (NetClient.Instance.Connected)
             {
                 this.connected = true;
-                if (this.pendingMessage!=null)
+                if (this.pendingMessage != null)
                 {
                     NetClient.Instance.SendMessage(this.pendingMessage);
                     this.pendingMessage = null;
@@ -92,7 +97,7 @@ namespace Services
         /// <param name="result">结果</param>
         /// <param name="reason">原因</param>
 
-        public void OnGameServerDisconnect(int result,string reason)
+        public void OnGameServerDisconnect(int result, string reason)
         {
             this.DisconnectNotify(result, reason);
             return;
@@ -102,28 +107,37 @@ namespace Services
         /// 断线通知
         /// </summary>
         /// <returns></returns>
-        bool DisconnectNotify(int result,string reason)
+        bool DisconnectNotify(int result, string reason)
         {
             if (this.pendingMessage != null)
             {
-                if (this.pendingMessage.Request.userLogin!=null)
+                if (this.pendingMessage.Request.userLogin != null)
                 {
                     if (this.OnLogin != null)
                     {
                         this.OnLogin(Result.Failed, string.Format("服务器断开！\n RESULT:{0} ERROR:{1}", result, reason));
                     }
                 }
-                else if(this.pendingMessage.Request.userRegister!=null)
+                else if (this.pendingMessage.Request.userRegister != null)
                 {
                     if (this.OnRegister != null)
                     {
                         this.OnRegister(Result.Failed, string.Format("服务器断开！\n RESULT:{0} ERROR:{1}", result, reason));
                     }
                 }
+                else
+                {
+                    if (this.OnCharacterCreate != null)
+                    {
+                        this.OnCharacterCreate(Result.Failed, string.Format("服务器断开！\n RESULT:{0} ERROR:{1}", result, reason));
+                    }
+                }
                 return true;
             }
             return false;
         }
+
+        #region 登录
 
         public void SendLogin(string user, string psw)
         {
@@ -163,6 +177,10 @@ namespace Services
         }
 
 
+        #endregion
+
+        #region 注册
+
         public void SendRegister(string user, string psw)
         {
             Debug.LogFormat("UserRegisterRequest::user :{0} psw:{1}", user, psw);
@@ -194,5 +212,50 @@ namespace Services
 
             }
         }
+
+
+        #endregion
+
+
+        public void SendCharacterCreate(string name, CharacterClass cls)
+        {
+            Debug.LogFormat("UserCreateCharacterRequest::name :{0} class:{1}", name, cls);
+            NetMessage message = new NetMessage();
+            message.Request = new NetMessageRequest();
+            message.Request.createChar = new UserCreateCharacterRequest();
+            message.Request.createChar.Name = name;
+            message.Request.createChar.Class = cls;
+
+            if (this.connected && NetClient.Instance.Connected)
+            {
+                this.pendingMessage = null;
+                NetClient.Instance.SendMessage(message);
+            }
+            else
+            {
+                this.pendingMessage = message;
+                this.ConnectToServer();
+            }
+
+        }
+
+        void OnUserCreateCharacter(object sender, UserCreateCharacterResponse response)
+        {
+            Debug.LogFormat("OnUserCreateCharacter:{0} [{1}]", response.Result, response.Errormsg);
+
+            if (response.Result == Result.Success)
+            {
+                Models.User.Instance.Info.Player.Characters.Clear();
+                Models.User.Instance.Info.Player.Characters.AddRange(response.Characters);
+            }
+
+            if (this.OnCharacterCreate != null)
+            {
+                this.OnCharacterCreate(response.Result, response.Errormsg);
+            }
+        }
+
+
+
     }
 }

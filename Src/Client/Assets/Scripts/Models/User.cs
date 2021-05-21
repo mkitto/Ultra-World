@@ -15,7 +15,7 @@ namespace Models
             get { return userInfo; }
         }
 
-
+        //本地映射 随时获取用户信息
         public void SetupUserInfo(SkillBridge.Message.NUserInfo info)
         {
             this.userInfo = info;

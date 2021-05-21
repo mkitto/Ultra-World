@@ -25,9 +25,13 @@ public class DataManager : Singleton<DataManager>
         Debug.LogFormat("DataManager > DataManager()");
     }
 
+
+    //给服务端用的
     public void Load()
     {
+        //获取路径下的文件
         string json = File.ReadAllText(this.DataPath + "MapDefine.txt");
+        //通过Json的反序列化，将js转换成对象
         this.Maps = JsonConvert.DeserializeObject<Dictionary<int, MapDefine>>(json);
 
         json = File.ReadAllText(this.DataPath + "CharacterDefine.txt");
@@ -41,6 +45,7 @@ public class DataManager : Singleton<DataManager>
     }
 
 
+    //给客户端用的 通过协程来启用 方便做异步
     public IEnumerator LoadData()
     {
         string json = File.ReadAllText(this.DataPath + "MapDefine.txt");

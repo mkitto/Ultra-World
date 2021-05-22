@@ -12,7 +12,7 @@ namespace Services
 {
     class UserService : Singleton<UserService>, IDisposable
     {
-
+        //事件 用于结果的通知
         public UnityEngine.Events.UnityAction<Result, string> OnLogin;
         public UnityEngine.Events.UnityAction<Result, string> OnRegister;
         public UnityEngine.Events.UnityAction<Result, string> OnCharacterCreate;
@@ -137,7 +137,6 @@ namespace Services
             return false;
         }
 
-        #region 登录
 
         public void SendLogin(string user, string psw)
         {
@@ -177,10 +176,6 @@ namespace Services
         }
 
 
-        #endregion
-
-        #region 注册
-
         public void SendRegister(string user, string psw)
         {
             Debug.LogFormat("UserRegisterRequest::user :{0} psw:{1}", user, psw);
@@ -214,8 +209,14 @@ namespace Services
         }
 
 
-        #endregion
 
+        #region 角色创建
+
+        /// <summary>
+        /// 发送角色创建
+        /// </summary>
+        /// <param name="name">角色名</param>
+        /// <param name="cls">职业</param>
 
         public void SendCharacterCreate(string name, CharacterClass cls)
         {
@@ -243,7 +244,7 @@ namespace Services
         {
             Debug.LogFormat("OnUserCreateCharacter:{0} [{1}]", response.Result, response.Errormsg);
 
-            if (response.Result == Result.Success)
+            if(response.Result == Result.Success)
             {
                 Models.User.Instance.Info.Player.Characters.Clear();
                 Models.User.Instance.Info.Player.Characters.AddRange(response.Characters);
@@ -252,10 +253,12 @@ namespace Services
             if (this.OnCharacterCreate != null)
             {
                 this.OnCharacterCreate(response.Result, response.Errormsg);
+
             }
         }
 
 
+        #endregion
 
     }
 }

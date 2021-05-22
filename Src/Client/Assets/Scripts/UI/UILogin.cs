@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Services;
-using SkillBridge.Message;
 using UnityEngine;
 using UnityEngine.UI;
+using Services;
+using SkillBridge.Message;
 
 public class UILogin : MonoBehaviour
 {
@@ -14,7 +14,7 @@ public class UILogin : MonoBehaviour
 
     void Start()
     {
-
+        UserService.Instance.OnLogin = OnLogin;
     }
     void Update()
     {
@@ -45,7 +45,7 @@ public class UILogin : MonoBehaviour
         if (result == Result.Success)
         {
             //登录成功，进入角色选择
-            //MessageBox.Show("登录成功,准备角色选择" + message,"提示", MessageBoxType.Information);
+            MessageBox.Show("登录成功,准备角色选择" + message,"提示", MessageBoxType.Information);
             SceneManager.Instance.LoadScene("CharSelect");
 
         }

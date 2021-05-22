@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Models;
@@ -13,9 +12,14 @@ public class UICharacterSelect : MonoBehaviour
 
     public GameObject btnCreateCancel;
     public InputField charName;
+    /// <summary>
+    /// 角色类型
+    /// </summary>
     CharacterClass charClass;
 
-
+    /// <summary>
+    /// 角色列表
+    /// </summary>
     public Transform UICharList;
     public GameObject UICharInfo;
 
@@ -36,7 +40,7 @@ public class UICharacterSelect : MonoBehaviour
 
     void Start()
     {
-        //DataManager.Instance.Load();
+        DataManager.Instance.Load();
         InitCharacterSelect(true);
         UserService.Instance.OnCharacterCreate = OnCharacterCreate;
     }
@@ -55,6 +59,7 @@ public class UICharacterSelect : MonoBehaviour
 
         if (init)
         {
+            //原来有没有 如果有就销毁掉
             foreach (var old in UiChars)
             {
                 Destroy(old);
@@ -65,13 +70,15 @@ public class UICharacterSelect : MonoBehaviour
 
             for (int i = 0; i < User.Instance.Info.Player.Characters.Count; i++)
             {
+                //实例化一个对象
+                //初始化 把角色名字类的信息都设置上去
                GameObject go= Instantiate(UICharInfo, this.UICharList);
                UICharInfo charInfo = go.GetComponent<UICharInfo>();
                charInfo.info = User.Instance.Info.Player.Characters[i];
 
                Button button = go.GetComponent<Button>();
                int idx = i;
-
+                //当按下的时候 执行选择角色
                button.onClick.AddListener(() =>
                {
                    OnSelectCharacter(idx);
@@ -122,31 +129,33 @@ public class UICharacterSelect : MonoBehaviour
         //更新选择角色的描述
         descs.text = DataManager.Instance.Characters[charClass].Description;
 
-
     }
 
     void OnCharacterCreate(Result result, string message)
     {
+        //如果角色创建成功 一个成功消息 一个失败消息 如果返回的是成功
+        //初始化
         if (result==Result.Success)
         {
             InitCharacterSelect(true);
         }
         else
-        {
             MessageBox.Show(message, "错误", MessageBoxType.Error);
-        }
     }
 
-
+    /// <summary>
+    /// 选择角色
+    /// </summary>
+    /// <param name="index"></param>
     public void OnSelectCharacter(int index)
     {
         this.selectCharacterIdx = index;
         var cha = User.Instance.Info.Player.Characters[index];
         Debug.LogFormat("Select Char：[{0}]{1}[{2}]",cha.Id,cha.Name,cha.Class);
         User.Instance.CurrentCharacter = cha;
-        //赋值 当前角色等于谁
         characterView.CurrentCharacter = index;
 
+        //选择角色按钮图片高亮
         for (int i = 0; i < User.Instance.Info.Player.Characters.Count; i++)
         {
             UICharInfo ci = this.UiChars[i].GetComponent<UICharInfo>();

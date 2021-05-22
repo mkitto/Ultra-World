@@ -30,15 +30,15 @@ namespace GameServer.Services
         //登录
         void OnLogin(NetConnection<NetSession> sender, UserLoginRequest request)
         {
-            Log.InfoFormat("UserLoginRequest: User:{0} Pass{1}", request.User, request.Passward);
+            Log.InfoFormat("UserLoginRequest: User:{0}  Pass:{1}", request.User, request.Passward);
 
             NetMessage message = new NetMessage();
             message.Response = new NetMessageResponse();
             message.Response.userLogin = new UserLoginResponse();
 
-            TUser user = DBService.Instance.Entities.Users.Where(u => u.Username == request.User).FirstOrDefault();
 
-            if (user != null)
+            TUser user = DBService.Instance.Entities.Users.Where(u => u.Username == request.User).FirstOrDefault();
+            if (user == null)
             {
                 message.Response.userLogin.Result = Result.Failed;
                 message.Response.userLogin.Errormsg = "用户不存在";
@@ -52,7 +52,6 @@ namespace GameServer.Services
             {
                 sender.Session.User = user;
 
-                //用户信息
                 message.Response.userLogin.Result = Result.Success;
                 message.Response.userLogin.Errormsg = "None";
                 message.Response.userLogin.Userinfo = new NUserInfo();
@@ -67,11 +66,10 @@ namespace GameServer.Services
                     info.Class = (CharacterClass)c.Class;
                     message.Response.userLogin.Userinfo.Player.Characters.Add(info);
                 }
-            }
 
+            }
             byte[] data = PackageHandler.PackMessage(message);
             sender.SendData(data, 0, data.Length);
-
         }
 
         //注册
@@ -119,12 +117,15 @@ namespace GameServer.Services
         {
             Log.InfoFormat("UserCreateCharacterRequest: Name:{0} Class:{1}", request.Name, request.Class);
             
+            //填充新的数据
             TCharacter character = new TCharacter()
             {
                 Name = request.Name,
                 Class = (int)request.Class,
                 TID = (int)request.Class,
-
+                //第一次进入的时候
+                //出现在地图中的点
+                //Map地图ID XYZ地图上的位置
                 MapID = 1,
                 MapPosX = 5000,
                 MapPosY = 4000,

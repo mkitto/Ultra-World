@@ -11,6 +11,7 @@ public class UICharInfo : MonoBehaviour
     public UnityEngine.UI.Image highlight;
 
 
+    //高亮图片逻辑
     public bool Selected
     {
         get

@@ -48,7 +48,7 @@ namespace Network
         /// <param name="e">The DataEventArgs object containging the received data.</param>
         public delegate void DataReceivedCallback(NetConnection<T> sender, DataEventArgs e);
         /// <summary>
-        /// Represents a callback used to inform a listener that a ServerConnection has disconnected.
+        /// 代表一个回调，用于通知监听器一个ServerConnection已经断开了连接。.
         /// </summary>
         /// <param name="sender">The sender of the callback.</param>
         /// <param name="e">The SocketAsyncEventArgs object used by the ServerConnection.</param>
@@ -71,7 +71,7 @@ namespace Network
 
         #region Constructor
         /// <summary>
-        /// A connection to our server, always listening asynchronously.
+        /// 与我们服务器的连接，总是异步监听.
         /// </summary>
         /// <param name="socket">The Socket for the connection.</param>
         /// <param name="args">The SocketAsyncEventArgs for asyncronous recieves.</param>
@@ -103,7 +103,7 @@ namespace Network
 
         #region Public Methods
         /// <summary>
-        /// Disconnects the client.
+        /// 断开客户端的连接.
         /// </summary>
         public void Disconnect()
         {
@@ -114,7 +114,7 @@ namespace Network
         }
 
         /// <summary>
-        /// Sends data to the client.
+        /// 向客户端发送数据.
         /// </summary>
         /// <param name="data">The data to send.</param>
         /// <param name="offset">The offset into the data.</param>
@@ -135,7 +135,7 @@ namespace Network
         {
             try
             {
-                // Retrieve the socket from the state object.
+                // 从状态对象中取回套接字.
                 Socket client = (Socket)ar.AsyncState;
 
                 // Complete sending the data to the remote device.
@@ -153,7 +153,7 @@ namespace Network
 
         #region Private Methods
         /// <summary>
-        /// Starts and asynchronous recieve.
+        /// 启动和异步接收.
         /// </summary>
         /// <param name="args">The SocketAsyncEventArgs to use.</param>
         private void BeginReceive(SocketAsyncEventArgs args)
@@ -172,7 +172,7 @@ namespace Network
         }
 
         /// <summary>
-        /// Called when an asynchronous receive has completed.
+        /// 当一个异步接收完成时被调用.
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="args">The SocketAsyncEventArgs for the operation.</param>
@@ -199,7 +199,7 @@ namespace Network
         }
 
         /// <summary>
-        /// Closes the connection.
+        /// 关闭连接.
         /// </summary>
         /// <param name="args">The SocketAsyncEventArgs for the connection.</param>
         private void CloseConnection(SocketAsyncEventArgs args)
@@ -232,10 +232,10 @@ namespace Network
         }
 
         /// <summary>
-        /// Fires the DisconnectedCallback.
+        /// 触发断开连接的回调
         /// </summary>
-        /// <param name="args">The SocketAsyncEventArgs for this connection.</param>
-        /// <param name="callback">The callback.</param>
+        /// <param name="args">此连接的SocketAsyncEventArgs.</param>
+        /// <param name="callback">回调.</param>
         private void OnDisconnected(SocketAsyncEventArgs args, DisconnectedCallback callback)
         {
             callback(this, args);

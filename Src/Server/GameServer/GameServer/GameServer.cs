@@ -8,7 +8,7 @@ using System.Net.Sockets;
 using System.Configuration;
 
 using System.Threading;
-
+using GameServer.Managers;
 using Network;
 using GameServer.Services;
 
@@ -27,8 +27,9 @@ namespace GameServer
             network.Init(Port);
             DBService.Instance.Init();
             UserService.Instance.Init();
-
-            //var a = DBService.Instance.Entities.Characters.Where(s => s.TID == 1);
+            DataManager.Instance.Load();
+            MapManager.Instance.Init();
+                //var a = DBService.Instance.Entities.Characters.Where(s => s.TID == 1);
             //Console.WriteLine("{0}", a.FirstOrDefault<TCharacter>().Name);
             thread = new Thread(new ThreadStart(this.Update));
             return true;

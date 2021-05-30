@@ -7,6 +7,7 @@ using Common;
 using Network;
 using SkillBridge.Message;
 using GameServer.Entities;
+using GameServer.Managers;
 
 namespace GameServer.Services
 {
@@ -18,7 +19,8 @@ namespace GameServer.Services
             MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<UserRegisterRequest>(this.OnRegister);
             MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<UserLoginRequest>(this.OnLogin);
             MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<UserCreateCharacterRequest>(this.OnCreateCharacter);
-
+            MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<UserGameEnterRequest>(this.OnGameEnter);
+            MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<UserGameLeaveRequest>(this.OnGameLeave);
         }
 
 
@@ -37,7 +39,7 @@ namespace GameServer.Services
             message.Response.userLogin = new UserLoginResponse();
 
 
-            TUser user = DBService.Instance.Entities.Users.Where(u => u.Username == request.User).FirstOrDefault();
+            TUser user = DBService.Instance.Entities.Users.FirstOrDefault(u => u.Username == request.User);
             if (user == null)
             {
                 message.Response.userLogin.Result = Result.Failed;
@@ -147,9 +149,35 @@ namespace GameServer.Services
 
             //发送数据包
             byte[] data = PackageHandler.PackMessage(message);
-            sender.SendData(data,0,data.Length);
+            sender.SendData(data, 0, data.Length);
         }
 
-        
+
+        void OnGameEnter(NetConnection<NetSession> sender, UserGameEnterRequest request)
+        {
+            //首先得知道传过来的是哪个角色 从Db中取到角色ID 名字 当前所在地图
+            TCharacter dbchar = sender.Session.User.Player.Characters.ElementAt(request.characterIdx);
+            Log.InfoFormat("UserGameEnterRequest: characterID:{0}:{1} Map:{2}", dbchar.ID, dbchar.Name, dbchar.MapID);
+            //将角色加入角色管理器
+            Character character = CharacterManager.Instance.AddCharacter(dbchar);
+
+            NetMessage message = new NetMessage();
+            message.Response = new NetMessageResponse();
+            message.Response.gameEnter = new UserGameEnterResponse();
+            message.Response.gameEnter.Result = Result.Success;
+            message.Response.gameEnter.Errormsg = "None";
+
+            byte[] data = PackageHandler.PackMessage(message);
+            sender.SendData(data, 0, data.Length);
+            //将Session中的角色赋值
+            sender.Session.Character = character;
+            
+            MapManager.Instance[dbchar.MapID].CharacterEnter(sender, character);
+        }
+
+        void OnGameLeave(NetConnection<NetSession> sender, UserGameLeaveRequest request)
+        {
+           
+        }
     }
 }

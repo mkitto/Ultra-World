@@ -153,7 +153,8 @@ public class UICharacterSelect : MonoBehaviour
         var cha = User.Instance.Info.Player.Characters[index];
         Debug.LogFormat("Select Char：[{0}]{1}[{2}]",cha.Id,cha.Name,cha.Class);
         User.Instance.CurrentCharacter = cha;
-        characterView.CurrentCharacter = index;
+        //只有三个职业 应该用职业来计算索引
+        characterView.CurrentCharacter = ((int) cha.Class - 1);
 
         //选择角色按钮图片高亮
         for (int i = 0; i < User.Instance.Info.Player.Characters.Count; i++)
@@ -166,7 +167,8 @@ public class UICharacterSelect : MonoBehaviour
     {
         if (selectCharacterIdx>=0)
         {
-            MessageBox.Show("进入游戏", "进入游戏", MessageBoxType.Confirm);
+            //MessageBox.Show("进入游戏", "进入游戏", MessageBoxType.Confirm);
+            UserService.Instance.SendGameEnter(selectCharacterIdx);
         }
     }
 }

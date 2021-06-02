@@ -43,12 +43,16 @@ namespace GameServer.Managers
             //根据数据库当中的角色创建出实体
             //保证游戏服务器中始终都是在线的角色
             Character character = new Character(CharacterType.Player, cha);
-            this.Characters[cha.ID] = character;
+            EntityManager.Instance.AddEntity(cha.MapID, character);
+            character.Info.Id = character.Id;
+            this.Characters[character.Id] = character;
             return character;
         }
 
         public void RemoveCharacter(int characterId)
         {
+            var cha = this.Characters[characterId];
+            EntityManager.Instance.RemoveEntity(cha.Data.MapID, cha);
             this.Characters.Remove(characterId);
         }
     }

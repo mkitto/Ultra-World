@@ -27,12 +27,17 @@ public class UIMiniMap : MonoBehaviour
 
         this.minimap.SetNativeSize();
         this.minimap.transform.localPosition=Vector3.zero;
-        //获取当前角色的位置
-        playertTransform = User.Instance.CurrentCharacterObject.transform;
+
     }
 
     void Update()
     {
+        if (playertTransform == null)
+        {
+            playertTransform = MinimapManager.Instance.PlayerTransform;
+        }
+        if (minimapBoundingBox==null||playertTransform==null) return;
+
         //拿到地图的宽高
         float realWidth = minimapBoundingBox.bounds.size.x;
         float realHeight = minimapBoundingBox.bounds.size.z;

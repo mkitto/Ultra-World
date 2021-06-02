@@ -152,7 +152,7 @@ public class UICharacterSelect : MonoBehaviour
         this.selectCharacterIdx = index;
         var cha = User.Instance.Info.Player.Characters[index];
         Debug.LogFormat("Select Char：[{0}]{1}[{2}]",cha.Id,cha.Name,cha.Class);
-        User.Instance.CurrentCharacter = cha;
+        //User.Instance.CurrentCharacter = cha;
         //只有三个职业 应该用职业来计算索引
         characterView.CurrentCharacter = ((int) cha.Class - 1);
 

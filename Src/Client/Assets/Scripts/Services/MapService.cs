@@ -19,6 +19,8 @@ namespace Services
         {
             MessageDistributer.Instance.Subscribe<MapCharacterEnterResponse>(this.OnMapCharacterEnter);
             MessageDistributer.Instance.Subscribe<MapCharacterLeaveResponse>(this.OnMapCharacterLeave);
+
+            MessageDistributer.Instance.Subscribe<MapEntitySyncResponse>(this.OnMapEntitySync);
         }
 
 
@@ -41,7 +43,7 @@ namespace Services
             foreach (var cha in response.Characters)
             {
                 //判断当前角色的ID和列表的Id是不是一样的  再赋值相当于刷新一下本地数据
-                if (User.Instance.CurrentCharacter.Id==cha.Id)
+                if (User.Instance.CurrentCharacter == null || User.Instance.CurrentCharacter.Id == cha.Id)
                 {
                     //当前角色切换地图
                     User.Instance.CurrentCharacter = cha;
@@ -61,6 +63,11 @@ namespace Services
 
         private void OnMapCharacterLeave(object sender, MapCharacterLeaveResponse response)
         {
+            Debug.LogFormat("OnMapCharacterLeave: CharID:{0}",response.characterId);
+            if(response.characterId!=User.Instance.CurrentCharacter.Id)
+                CharacterManager.Instance.RemoveCharacter(response.characterId);
+            else
+                CharacterManager.Instance.Clear();
 
         }
 
@@ -79,6 +86,43 @@ namespace Services
             }
             else
                 Debug.LogErrorFormat("EnterMap: Map {0} not existed", mapId);
+        }
+
+        public void SendMapEntitySync(EntityEvent entityEvent, NEntity entity)
+        {
+            Debug.LogFormat("MapEntitySyncResponse :ID:{0} 位置:{1} 方向:{2} 速度:{3}",entity.Id,entity.Position.String(),entity.Direction.ToString(),entity.Speed);
+            NetMessage message = new NetMessage();
+            message.Request = new NetMessageRequest();
+            message.Request.mapEntitySync = new MapEntitySyncRequest();
+            message.Request.mapEntitySync.entitySync = new NEntitySync()
+            {
+                Id = entity.Id,
+                Event = entityEvent,
+                Entity = entity
+            };
+            NetClient.Instance.SendMessage(message);
+
+        }
+        /// <summary>
+        /// 同步地图
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="message"></param>
+        private void OnMapEntitySync(object sender, MapEntitySyncResponse response)
+        {
+            //添加到字符串里 一次性输出出来
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            sb.AppendFormat("MapEntityUpdateResponse: Entitys:{0]", response.entitySyncs.Count);
+            sb.AppendLine();
+
+            foreach (var entity in response.entitySyncs)
+            {
+                //收到Entity响应
+                EntityManager.Instance.OnEntitySync(entity);
+                sb.AppendFormat("  [{0}]evt:{1} entity:{2}", entity.Id, entity.Event, entity.Entity.String());
+                sb.AppendLine();
+            }
+            Debug.Log(sb.ToString());
         }
 
     }

@@ -33,7 +33,6 @@ namespace Services
             MessageDistributer.Instance.Subscribe<UserCreateCharacterResponse>(this.OnUserCreateCharacter);
             MessageDistributer.Instance.Subscribe<UserGameEnterResponse>(this.OnGameEnter);
             MessageDistributer.Instance.Subscribe<UserGameLeaveResponse>(this.OnGameLeave);
-            MessageDistributer.Instance.Subscribe<MapCharacterEnterResponse>(this.OnCharacterEnter);
 
         }
 
@@ -280,7 +279,7 @@ namespace Services
 
             if (response.Result==Result.Success)
             {
-                
+
             }
         }
 
@@ -295,20 +294,9 @@ namespace Services
 
         void OnGameLeave(object sender, UserGameLeaveResponse response)
         {
+            MapService.Instance.CurrentMapId = 0;
+            User.Instance.CurrentCharacter = null;
             Debug.LogFormat("OnGameLeave:{0} [{1}]",response.Result,response.Errormsg);
-        }
-
-        void OnCharacterEnter(object sender, MapCharacterEnterResponse message)
-        {
-            //输出信息 进入了哪个地图
-            Debug.LogFormat("OnMapCharacterEnter:{0}", message.mapId);
-
-            //拿到最早的角色信息
-            NCharacterInfo info = message.Characters[0];
-            //保存角色信息
-            User.Instance.CurrentCharacter = info;
-            //加载场景
-            SceneManager.Instance.LoadScene(DataManager.Instance.Maps[message.mapId].Resource);
         }
 
     }

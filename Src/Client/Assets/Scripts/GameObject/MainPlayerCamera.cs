@@ -20,7 +20,10 @@ public class MainPlayerCamera : MonoSingleton<MainPlayerCamera>
         }
         //如果玩家不等于空 将当前的位置等于玩家的位置 摄像机会跟着角色走
         if (player == null)
+        {
+            Debug.Log(" User.Instance.CurrentCharacterObject为空");
             return;
+        }
 
         this.transform.position = player.transform.position;
         this.transform.rotation = player.transform.rotation;

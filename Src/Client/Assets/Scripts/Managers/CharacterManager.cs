@@ -37,6 +37,12 @@ namespace Managers
 
         public void Clear()
         {
+            int[] Keys = Characters.Keys.ToArray();
+            foreach (var key in Keys)
+            {
+                RemoveCharacter(key);
+            }
+            
             this.Characters.Clear();
         }
 

@@ -81,7 +81,10 @@ namespace GameServer.Models
             byte[] data = PackageHandler.PackMessage(message);
             conn.SendData(data,0,data.Length);
         }
-
+        /// <summary>
+        /// 角色离开
+        /// </summary>
+        /// <param name="cha"></param>
         internal void CharacterLeave(Character cha)
         {
             Log.InfoFormat("CharacterLeave: Map:{0} characterId:{1}",this.Define.ID,cha.Id);

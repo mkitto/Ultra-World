@@ -60,10 +60,6 @@ namespace Entities
                 Vector3 dir = this.direction;
                 this.position += Vector3Int.RoundToInt(dir * speed * delta / 100f);
             }
-            entityData.Position.FromVector3Int(this.position);
-            entityData.Direction.FromVector3Int(this.direction);
-            entityData.Speed = this.speed;
-
         }
 
         public void SetEntityData(NEntity entity)
@@ -74,7 +70,7 @@ namespace Entities
             this.speed = entity.Speed;
         }
 
-        private void UpdateEntityData()
+        public void UpdateEntityData()
         {
             //从一个对象反向的给我们的Entity
             entityData.Position.FromVector3Int(this.position);

@@ -136,7 +136,7 @@ namespace GameServer.Services
                 MapPosZ = 820,
             };
 
-            character = DBService.Instance.Entities.Characters.Add(character);
+            DBService.Instance.Entities.Characters.Add(character);
             //写入数据
             //DBService.Instance.Entities.Characters.Add(character);
             sender.Session.User.Player.Characters.Add(character);
@@ -146,9 +146,6 @@ namespace GameServer.Services
             NetMessage message = new NetMessage();
             message.Response = new NetMessageResponse();
             message.Response.createChar = new UserCreateCharacterResponse();
-            //信息的应答的结果等于成功
-            message.Response.createChar.Result = Result.Success;
-            message.Response.createChar.Errormsg = "None";
 
             //把当前已经有的角色添加进列表里面
             foreach (var c in sender.Session.User.Player.Characters)
@@ -162,7 +159,9 @@ namespace GameServer.Services
                 message.Response.createChar.Characters.Add(info);
             }
 
-            //发送数据包
+            message.Response.createChar.Result = Result.Success;
+            message.Response.createChar.Errormsg = "None";
+       
             byte[] data = PackageHandler.PackMessage(message);
             sender.SendData(data, 0, data.Length);
         }
@@ -195,8 +194,7 @@ namespace GameServer.Services
             Character character = sender.Session.Character;
             Log.InfoFormat("UserGameLeaveRequest: characterID:{0}:{1} Map:{2}", character.Id, character.Info.Name, character.Info.mapId);
 
-            CharacterManager.Instance.RemoveCharacter(character.Id);
-            MapManager.Instance[character.Info.mapId].CharacterLeave(character);
+            CharacterLeave(character);
             NetMessage message = new NetMessage();
             message.Response = new NetMessageResponse();
             message.Response.gameLeave = new UserGameLeaveResponse();
@@ -205,6 +203,12 @@ namespace GameServer.Services
 
             byte[] data = PackageHandler.PackMessage(message);
             sender.SendData(data,0,data.Length);
+        }
+
+        public void CharacterLeave(Character character)
+        {
+            CharacterManager.Instance.RemoveCharacter(character.Id);//老师的是character.id
+            MapManager.Instance[character.Info.mapId].CharacterLeave(character);
         }
     }
 }

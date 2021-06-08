@@ -90,7 +90,7 @@ namespace Services
 
         public void SendMapEntitySync(EntityEvent entityEvent, NEntity entity)
         {
-            Debug.LogFormat("MapEntitySyncResponse :ID:{0} 位置:{1} 方向:{2} 速度:{3}",entity.Id,entity.Position.String(),entity.Direction.ToString(),entity.Speed);
+            //Debug.LogFormat("MapEntitySyncResponse :ID:{0} 位置:{1} 方向:{2} 速度:{3}",entity.Id,entity.Position.String(),entity.Direction.ToString(),entity.Speed);
             NetMessage message = new NetMessage();
             message.Request = new NetMessageRequest();
             message.Request.mapEntitySync = new MapEntitySyncRequest();
@@ -112,7 +112,7 @@ namespace Services
         {
             //添加到字符串里 一次性输出出来
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            sb.AppendFormat("MapEntityUpdateResponse: Entitys:{0]", response.entitySyncs.Count);
+            sb.AppendFormat("MapEntityUpdateResponse:Entitys:{0}",response.entitySyncs.Count);
             sb.AppendLine();
 
             foreach (var entity in response.entitySyncs)
@@ -122,8 +122,22 @@ namespace Services
                 sb.AppendFormat("  [{0}]evt:{1} entity:{2}", entity.Id, entity.Event, entity.Entity.String());
                 sb.AppendLine();
             }
-            Debug.Log(sb.ToString());
+            //Debug.Log(sb.ToString());
         }
+        /// <summary>
+        /// 发送传送
+        /// </summary>
+        /// <param name="iD"></param>
+        internal void SendMapTeleport(int teleporterID)
+        {
+            Debug.LogFormat("MapTeleportRequst :telrportID:{0}",teleporterID);
+            NetMessage message = new NetMessage();
+            message.Request = new NetMessageRequest();
+            message.Request.mapTeleport = new MapTeleportRequest();
+            message.Request.mapTeleport.teleporterId = teleporterID;
+            NetClient.Instance.SendMessage(message);
+        }
+
 
     }
 }

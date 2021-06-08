@@ -41,19 +41,18 @@ public class GameObjectManager : MonoSingleton<GameObjectManager>
     {
         CreateCharacterObject(cha);
     }
-    //移除角色对象
-    void OnCharacterLeave(Character cha)
+	//移除角色对象
+    void OnCharacterLeave(Character character)
     {
-        if (!Characters.ContainsKey(cha.entityId))
+        if (!Characters.ContainsKey(character.entityId))
         {
             return;
         }
-        //如果在其他地方删除了角色则不执行
-        if(Characters[cha.entityId] != null)
+		//如果在其他地方删除了角色则不执行
+        if (Characters[character.entityId]!=null)
         {
-            //删除角色
-            Destroy(Characters[cha.entityId].gameObject);
-            this.Characters.Remove(cha.entityId);
+            Destroy(Characters[character.entityId]);
+            Characters.Remove(character.entityId);
         }
     }
 
@@ -84,14 +83,13 @@ public class GameObjectManager : MonoSingleton<GameObjectManager>
 
             GameObject go = (GameObject)Instantiate(obj,this.transform);
             go.name = "Character_" + character.Info.Id + "_" + character.Info.Name;
-            Characters[character.Info.Id] = go;
+            Characters[character.entityId] = go;
 
             UIWorldElementManager.Instance.AddCharacterNameBar(go.transform,character);
         }
         this.InitGameObject(Characters[character.entityId],character);
     }
-
-    private void InitGameObject(GameObject go, Character character)
+    public void InitGameObject(GameObject go,Character character)
     {
         //把这些坐标转换成世界坐标
         go.transform.position = GameObjectTool.LogicToWorld(character.position);

@@ -12,48 +12,42 @@ public class UIMiniMap : MonoBehaviour
     public Image arrow;
     public Text mapName;
 
-    private Transform playertTransform; //缓存一下 提升性能
-
-    void Start()
-    {
-       this.InitMap();
+    private Transform playerTransform;
+	// Use this for initialization
+	void Start () {
+        MinimapManager.Instance.minimap = this; 
+       this.UpdateMap();
     }
 
-    void InitMap()
+    public void UpdateMap()
     {
         this.mapName.text = User.Instance.CurrentMapData.Name;
-        if (this.minimap.overrideSprite != null)
-            this.minimap.overrideSprite = MinimapManager.Instance.LoadCurrentMinimap();
+        this.minimap.overrideSprite = MinimapManager.Instance.LoadCurrentMinimap();
 
         this.minimap.SetNativeSize();
-        this.minimap.transform.localPosition=Vector3.zero;
-
+        this.minimap.transform.localPosition = Vector3.zero;
+        this.minimapBoundingBox = MinimapManager.Instance.MinimapBoundingBox;//更新包围盒
+        this.playerTransform = null; //因为角色是重新创建的，所以我们要清空角色
     }
-
-    void Update()
-    {
-        if (playertTransform == null)
+	
+	// Update is called once per frame
+	void Update () {
+        if (playerTransform==null)
         {
-            playertTransform = MinimapManager.Instance.PlayerTransform;
+            playerTransform = MinimapManager.Instance.PlayerTransform;
         }
-        if (minimapBoundingBox==null||playertTransform==null) return;
-
-        //拿到地图的宽高
+        if (minimapBoundingBox == null || playerTransform == null) return;
         float realWidth = minimapBoundingBox.bounds.size.x;
         float realHeight = minimapBoundingBox.bounds.size.z;
 
-        //相对坐标 角色在地图中的位置
-        float realX = playertTransform.position.x - minimapBoundingBox.bounds.min.x;
-        float realY = playertTransform.position.z - minimapBoundingBox.bounds.min.z;
+        float relaX = playerTransform.position.x - minimapBoundingBox.bounds.min.x;
+        float relaY = playerTransform.position.z - minimapBoundingBox.bounds.min.z;
 
-        //相对位置 进行转换得到中心位置
-        float pivotX = realX / realWidth;
-        float pivotY = realY / realHeight;
+        float pivotX = relaX / realWidth;
+        float pivotY = relaY / realHeight;
 
         this.minimap.rectTransform.pivot = new Vector2(pivotX, pivotY);
-        this.minimap.rectTransform.localPosition=Vector3.zero;
-        //小地图指针跟着角色旋转
-        this.arrow.transform.eulerAngles = new Vector3(0, 0, -playertTransform.eulerAngles.y);
-
-    }
+        this.minimap.rectTransform.localPosition = Vector2.zero;
+        this.arrow.transform.eulerAngles = new Vector3(0, 0, -playerTransform.eulerAngles.y);
+	}
 }

@@ -17,7 +17,9 @@ namespace GameServer.Services
         public MapService()
         {
             MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<MapEntitySyncRequest>(this.OnMapEntitySync);
+            MessageDistributer<NetConnection<NetSession>>.Instance.Subscribe<MapTeleportRequest>(this.OnMapTeleport);
         }
+
         public void Init()
         {
             MapManager.Instance.Init();
@@ -41,5 +43,32 @@ namespace GameServer.Services
             byte[] data = PackageHandler.PackMessage(message);
             connection.SendData(data,0,data.Length);
         }
+
+        void OnMapTeleport(NetConnection<NetSession> sender, MapTeleportRequest request)
+        {
+            //当前谁在请求传送
+            Character character = sender.Session.Character;
+            Log.InfoFormat("ON地图传送: 角色ID:{0}:{1} 传送点ID:{2}", character.Id, character.Data.Name, request.teleporterId);
+            //校验
+            if (!DataManager.Instance.Teleporters.ContainsKey(request.teleporterId))
+            {
+                Log.WarningFormat("进入的传送点{0} 不存在", request.teleporterId);
+                return;
+            }
+            //如果传送点存在，读取数据 判断表里面的连接点是不是对的
+            TeleporterDefine source = DataManager.Instance.Teleporters[request.teleporterId];
+            if (source.LinkTo == 0 || !DataManager.Instance.Teleporters.ContainsKey(source.LinkTo))
+            {
+                Log.WarningFormat("进入的传送点ID{0} 链接ID{1} 不存在", request.teleporterId, source.LinkTo);
+            }
+            //根据LInkTo拉取传送目标
+            TeleporterDefine target = DataManager.Instance.Teleporters[source.LinkTo];
+            //玩家先离开老地图 并设置一下位置 玩家进入新地图
+            MapManager.Instance[source.MapID].CharacterLeave(character);
+            character.Position = target.Position;
+            character.Direction = target.Direction;
+            MapManager.Instance[target.MapID].CharacterEnter(sender, character);
+        }
+
     }
 }

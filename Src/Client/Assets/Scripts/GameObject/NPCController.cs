@@ -2,7 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Manager;
+using Managers;
 using Models;
 using UnityEngine;
 
@@ -19,7 +19,7 @@ public class NPCController : MonoBehaviour
     {
         renderer = this.gameObject.GetComponentInChildren<SkinnedMeshRenderer>();
         anim = this.gameObject.GetComponent<Animator>();
-        orignColor = renderer.sharedMaterial.color;
+        orignColor = renderer.sharedMaterial.color;//初始化的时候，将当前的颜色先保存了一份
         npc = NPCManager.Instance.GetNpcDefine(npcID);
         this.StartCoroutine(Actions());
     }
@@ -28,7 +28,7 @@ public class NPCController : MonoBehaviour
     {
 
     }
-
+    //随机动作 写死循环，永远不会卡住主线程
     IEnumerator Actions()
     {
         while (true)
@@ -52,18 +52,18 @@ public class NPCController : MonoBehaviour
     }
 
     void Interactive()
-    {
+    {//效验 防止重复点击 启动协程在协程里面执行交互
         if (!inInteractive)
         {
             inInteractive = true;
             StartCoroutine(DoInteractive());
         }
     }
-
+    //交互
     IEnumerator DoInteractive()
     {
-        yield return FaceToPlayer();
-        if (NPCManager.Instance.Interactive(npc))//判断是否能做动作
+        yield return FaceToPlayer();//面向玩家 点击转身
+        if (NPCManager.Instance.Interactive(npc))//把交互请求发送给了NPCManager
         {
             anim.SetTrigger("Talk");
         }
@@ -83,9 +83,9 @@ public class NPCController : MonoBehaviour
 
     private void OnMouseDown()
     {
-        NPCManager.Instance.Interactive(npc);//通过npc的类型执行TestManager注册给NPCManager的字典的委托：打开不同种类的窗口
-        Interactive();//防双击，转向，做动作
-        Debug.LogError(this.name);
+        //NPCManager.Instance.Interactive(npc);//通过npc的类型执行TestManager注册给NPCManager的字典的委托：打开不同种类的窗口
+        Interactive();
+        //Debug.LogError(this.name);
     }
     private void OnMouseOver()
     {
@@ -99,6 +99,7 @@ public class NPCController : MonoBehaviour
     {
         Highlight(false);
     }
+    //高亮，知道鼠标移动到上面了
     void Highlight(bool highlight)
     {
         if (highlight)

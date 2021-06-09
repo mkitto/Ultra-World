@@ -8,16 +8,16 @@ namespace Common.Data
 {
     public enum NpcType
     {
-        None=0,
-        Functional=1,
+        None = 0,
+        Functional = 1,
         Task,
     }
 
     public enum NpcFunction
     {
-        None=0,
-        InvokeShop=1,
-        InvokeInsrance=2,
+        None = 0,
+        InvokeShop = 1,
+        InvokeInsrance = 2,
     }
 
     public class NpcDefine

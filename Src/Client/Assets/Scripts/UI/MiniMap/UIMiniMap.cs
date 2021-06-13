@@ -14,7 +14,9 @@ public class UIMiniMap : MonoBehaviour
 
     private Transform playerTransform;
 	// Use this for initialization
-	void Start () {
+	void Start ()
+    {
+        Debug.LogWarning("UIMinimap Start" + this.GetInstanceID());
         MinimapManager.Instance.minimap = this; 
        this.UpdateMap();
     }

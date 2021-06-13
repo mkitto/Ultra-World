@@ -32,8 +32,14 @@ namespace GameServer.Entities
             this.Info.Entity = this.EntityData;
             this.Define = DataManager.Instance.Characters[this.Info.Tid];
 
+            //构建道具管理器
             this.ItemManager = new ItemManager(this);
+            //填充道具网络数据
             this.ItemManager.GetItemInfos(this.Info.Items);
+            //初始化背包,角色登陆创建背包
+            this.Info.Bag = new NBagInfo();
+            this.Info.Bag.Unlocked = this.Data.Bag.Unlocked;
+            this.Info.Bag.Items = this.Data.Bag.Items;
         }
     }
 }

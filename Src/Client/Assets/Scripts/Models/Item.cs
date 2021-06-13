@@ -1,4 +1,5 @@
-﻿using SkillBridge.Message;
+﻿using Common.Data;
+using SkillBridge.Message;
 
 namespace Models
 {
@@ -6,11 +7,12 @@ namespace Models
     {
         public int Id;
         public int Count;
-
+        public ItemDefine Define;
         public Item(NItemInfo item)
         {
             this.Id = item.Id;
             this.Count = item.Count;
+            this.Define = DataManager.Instance.Items[item.Id];
         }
 
         public override string ToString()

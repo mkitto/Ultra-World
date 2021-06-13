@@ -135,8 +135,14 @@ namespace GameServer.Services
                 MapPosY = 4000,
                 MapPosZ = 820,
             };
+            //背包初始化，为角色创建一个背包
+            var bag = new TCharacterBag();
+            bag.Owner = character;
+            bag.Items = new byte[0];
+            bag.Unlocked = 20;
+            character.Bag = DBService.Instance.Entities.CharacterBags.Add(bag);
 
-            DBService.Instance.Entities.Characters.Add(character);
+            character = DBService.Instance.Entities.Characters.Add(character);
             //写入数据
             //DBService.Instance.Entities.Characters.Add(character);
             sender.Session.User.Player.Characters.Add(character);
@@ -189,17 +195,20 @@ namespace GameServer.Services
             Log.InfoFormat("HasItem:[{0}]{1}",itemId,hasItem);
             if (hasItem)
             {
-                character.ItemManager.RemoveItem(itemId, 1);
+                //character.ItemManager.RemoveItem(itemId, 1);
             }
             else
             {
-                character.ItemManager.AddItem(itemId,2);
+                character.ItemManager.AddItem(1,200);
+                character.ItemManager.AddItem(2, 100);
+                character.ItemManager.AddItem(3, 30);
+                character.ItemManager.AddItem(4, 120);
             }
 
             Models.Item item = character.ItemManager.GetItem(itemId);
 
             Log.InfoFormat("Item:[{0}][{1}]",itemId,item);
-
+            DBService.Instance.Save();
 
             byte[] data = PackageHandler.PackMessage(message);
             sender.SendData(data, 0, data.Length);

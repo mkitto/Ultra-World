@@ -86,7 +86,7 @@ namespace GameServer.Managers
                 this.Items.Add(itemId,item);
             }
             Log.InfoFormat("[{0}增加道具[{1}]]addCount:[2]",this.Owner.Data.ID,item,count);
-            DBService.Instance.Save();
+            //DBService.Instance.Save();
             return true;
         }
 
@@ -102,7 +102,7 @@ namespace GameServer.Managers
                 return false;
             item.Remove(count);
             Log.InfoFormat("[{0}]移除道具[{1}]减少数量：{2}",this.Owner.Data.ID,item,count);
-            DBService.Instance.Save();
+            //DBService.Instance.Save();
             return true;
         }
         //从内存数据转到网络数据中

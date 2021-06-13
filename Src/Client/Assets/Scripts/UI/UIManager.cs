@@ -28,6 +28,7 @@ public class UIManager : Singleton<UIManager>
     {
         //第一次用到就要初始化完成，所以防在构造函数里面
         UIResources.Add(typeof(UITest),new UIElement(){Resources = "UI/UITest",Cache = true});
+        UIResources.Add(typeof(UIBag),new UIElement(){Resources = "UI/UIBag",Cache = true});
     }
 
     ~UIManager()

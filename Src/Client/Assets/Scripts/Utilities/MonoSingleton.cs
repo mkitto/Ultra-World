@@ -18,8 +18,9 @@ public abstract class MonoSingleton<T> : MonoBehaviour where T : MonoBehaviour
 
     }
 
-    void Start()
+    void Awake()
     {
+        Debug.LogWarningFormat("{0}[{1}] Awake",typeof(T),this.GetInstanceID());
         if (global)
         {
             //如果单例不为空，也不是当前脚本跟当前脚本绑定的实例不一样

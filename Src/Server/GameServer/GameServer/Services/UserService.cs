@@ -34,32 +34,32 @@ namespace GameServer.Services
         {
             Log.InfoFormat("UserLoginRequest: User:{0}  Pass:{1}", request.User, request.Passward);
 
-            NetMessage message = new NetMessage();
-            message.Response = new NetMessageResponse();
-            message.Response.userLogin = new UserLoginResponse();
-
+            //NetMessage message = new NetMessage();
+            //message.Response = new NetMessageResponse();
+            //message.Response.userLogin = new UserLoginResponse();
+            sender.Session.Response.userLogin = new UserLoginResponse();
 
             TUser user = DBService.Instance.Entities.Users.FirstOrDefault(u => u.Username == request.User);
             if (user == null)
             {
-                message.Response.userLogin.Result = Result.Failed;
-                message.Response.userLogin.Errormsg = "用户不存在";
+                sender.Session.Response.userLogin.Result = Result.Failed;
+                sender.Session.Response.userLogin.Errormsg = "用户不存在";
             }
             else if (user.Password != request.Passward)
             {
-                message.Response.userLogin.Result = Result.Failed;
-                message.Response.userLogin.Errormsg = "密码错误";
+                sender.Session.Response.userLogin.Result = Result.Failed;
+                sender.Session.Response.userLogin.Errormsg = "密码错误";
             }
             else
             {
                 sender.Session.User = user;
 
-                message.Response.userLogin.Result = Result.Success;
-                message.Response.userLogin.Errormsg = "None";
-                message.Response.userLogin.Userinfo = new NUserInfo();
-                message.Response.userLogin.Userinfo.Id = (int)user.ID;
-                message.Response.userLogin.Userinfo.Player = new NPlayerInfo();
-                message.Response.userLogin.Userinfo.Player.Id = user.Player.ID;
+                sender.Session.Response.userLogin.Result = Result.Success;
+                sender.Session.Response.userLogin.Errormsg = "None";
+                sender.Session.Response.userLogin.Userinfo = new NUserInfo();
+                sender.Session.Response.userLogin.Userinfo.Id = (int)user.ID;
+                sender.Session.Response.userLogin.Userinfo.Player = new NPlayerInfo();
+                sender.Session.Response.userLogin.Userinfo.Player.Id = user.Player.ID;
                 foreach (var c in user.Player.Characters)
                 {
                     NCharacterInfo info = new NCharacterInfo();
@@ -68,12 +68,13 @@ namespace GameServer.Services
                     info.Type=CharacterType.Player;
                     info.Class = (CharacterClass)c.Class;
                     info.Tid = c.ID;
-                    message.Response.userLogin.Userinfo.Player.Characters.Add(info);
+                    sender.Session.Response.userLogin.Userinfo.Player.Characters.Add(info);
                 }
 
             }
-            byte[] data = PackageHandler.PackMessage(message);
-            sender.SendData(data, 0, data.Length);
+            //byte[] data = PackageHandler.PackMessage(message);
+            //sender.SendData(data, 0, data.Length);
+            sender.SendResponse();
         }
 
         //注册
@@ -134,6 +135,7 @@ namespace GameServer.Services
                 MapPosX = 5000,
                 MapPosY = 4000,
                 MapPosZ = 820,
+                Gold = 100000, //初始10W金币
             };
             //背包初始化，为角色创建一个背包
             var bag = new TCharacterBag();

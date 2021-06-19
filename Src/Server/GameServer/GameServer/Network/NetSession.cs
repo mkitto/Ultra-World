@@ -14,16 +14,51 @@ namespace Network
     /// <summary>
     /// 网络会话
     /// </summary>
-    class NetSession
+    class NetSession:INetSession
     {
         public TUser User { get; set; }
         public Character Character { get; set; }
         public NEntity Entity { get; set; }
 
-        internal void Disconnected()
+        public void Disconnected()
         {
             if(Character!=null)
                 UserService.Instance.CharacterLeave(Character);
+        }
+        
+        NetMessage response;
+
+        public NetMessageResponse Response
+        {
+            get
+            {
+                if (response == null)
+                {
+                    response = new NetMessage();
+                }
+
+                if (response.Response == null)
+                    response.Response = new NetMessageResponse();
+                return response.Response;
+            }
+        }
+
+        public byte[] GetResponse()
+        {
+            if (response != null)
+            {
+                if (this.Character != null && this.Character.StatusManager.HasStatus)
+                {
+                    this.Character.StatusManager.ApplyResponse(Response);
+                }
+
+                byte[] data = PackageHandler.PackMessage(response);
+                response = null;
+                return data;
+
+            }
+
+            return null;
         }
     }
 }

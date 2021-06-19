@@ -34,7 +34,7 @@ namespace Models
 
         public void AddGold(int gold)
         {
-            //this.CurrentCharacter.Gold += gold;
+            this.CurrentCharacter.Gold += gold;
         }
 
     }

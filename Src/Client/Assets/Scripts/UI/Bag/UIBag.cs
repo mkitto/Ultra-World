@@ -59,24 +59,24 @@ public class UIBag : UIWindow
 
     public void SetTitle()
     {
-        this.money.text = User.Instance.CurrentCharacter.Id.ToString();
+        this.money.text = User.Instance.CurrentCharacter.Gold.ToString();
     }
 
-    //void Clear()
-    //{
-    //    for (int i=0;i<slots.Count;i++)
-    //    {
-    //        if (slots[i].transform.childCount>0)
-    //        {
-    //            Destroy(slots[i].transform.GetChild(0).gameObject);
-    //        }
-    //    }
-    //}
+    void Clear()
+    {
+        for (int i = 0; i < slots.Count; i++)
+        {
+            if (slots[i].transform.childCount > 0)
+            {
+                Destroy(slots[i].transform.GetChild(0).gameObject);
+            }
+        }
+    }
 
     public void OnReset()
     {
         BagManager.Instance.Reset();
-        //this.Clear();
-        //StartCoroutine(InitBags());
+        this.Clear();
+        StartCoroutine(InitBags());
     }
 }

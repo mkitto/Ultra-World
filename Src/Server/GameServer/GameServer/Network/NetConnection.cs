@@ -39,7 +39,7 @@ namespace Network
     /// <summary>
     ///与我们服务器的连接
     /// </summary>
-    public class NetConnection<T>
+    public class NetConnection<T>where T:INetSession
     {
         /// <summary>
         /// 代表一个回调，用于通知监听器一个ServerConnection已经收到数据。
@@ -129,6 +129,12 @@ namespace Network
                     //socket.Send(data, offset, count, SocketFlags.None);
                     socket.BeginSend(data, 0, count, SocketFlags.None, new AsyncCallback(SendCallback), socket);
             }
+        }
+
+        public void SendResponse()
+        {
+            byte[] data = session.GetResponse();
+            this.SendData(data,0,data.Length);
         }
 
         private void SendCallback(IAsyncResult ar)

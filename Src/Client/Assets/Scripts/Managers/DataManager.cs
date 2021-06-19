@@ -19,7 +19,9 @@ public class DataManager : Singleton<DataManager>
     public Dictionary<int, Dictionary<int, SpawnPointDefine>> SpawnPoints = null;
     public Dictionary<int, NpcDefine> Npcs = null;
     public Dictionary<int, ItemDefine> Items = null;
-
+    public Dictionary<int, ShopDefine> Shops = null;
+    public Dictionary<int, Dictionary<int, ShopItemDefine>> ShopItems = null;
+    
     public DataManager()
     {
         this.DataPath = "Data/";
@@ -45,6 +47,13 @@ public class DataManager : Singleton<DataManager>
 
         json = File.ReadAllText(this.DataPath + "ItemDefine.txt");
         this.Items = JsonConvert.DeserializeObject<Dictionary<int, ItemDefine>>(json);
+
+        json = File.ReadAllText(this.DataPath + "ShopDefine.txt");
+        this.Shops = JsonConvert.DeserializeObject<Dictionary<int, ShopDefine>>(json);
+        
+        json = File.ReadAllText(this.DataPath + "ShopItemDefine.txt");
+        this.ShopItems = JsonConvert.DeserializeObject<Dictionary<int, Dictionary<int,ShopItemDefine>>>(json);
+
     }
 
 
@@ -75,11 +84,11 @@ public class DataManager : Singleton<DataManager>
         json = File.ReadAllText(this.DataPath + "ItemDefine.txt");
         this.Items = JsonConvert.DeserializeObject<Dictionary<int, ItemDefine>>(json);
 
-        //json = File.ReadAllText(this.DataPath + "ShopDefine.txt");
-        //this.Shops = JsonConvert.DeserializeObject<Dictionary<int, ShopDefine>>(json);
+        json = File.ReadAllText(this.DataPath + "ShopDefine.txt");
+        this.Shops = JsonConvert.DeserializeObject<Dictionary<int, ShopDefine>>(json);
 
-        //json = File.ReadAllText(this.DataPath + "ShopItemDefine.txt");
-        //this.ShopItems = JsonConvert.DeserializeObject<Dictionary<int, Dictionary<int, ShopItemDefine>>>(json);
+        json = File.ReadAllText(this.DataPath + "ShopItemDefine.txt");
+        this.ShopItems = JsonConvert.DeserializeObject<Dictionary<int, Dictionary<int, ShopItemDefine>>>(json);
 
         yield return null;
     }

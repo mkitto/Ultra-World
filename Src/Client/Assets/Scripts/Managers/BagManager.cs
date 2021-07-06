@@ -21,7 +21,6 @@ namespace Managers
         {
             this.Info = info;
             this.Unlocked = info.Unlocked;
-            //通过格子数为数组字节赋值
             Items = new BagItem[this.Unlocked];
             if (info.Items != null && info.Items.Length >= this.Unlocked)
             {
@@ -84,8 +83,8 @@ namespace Managers
             {
                 for (int i = 0; i < this.Unlocked; i++)
                 {
-                    BagItem* item = (BagItem*) (pt + i * sizeof(BagItem));
-                    *item = Items[i];
+                    BagItem* Item = (BagItem*)(pt + i * sizeof(BagItem));
+                    *Item = Items[i];
                 }
             }
             return this.Info;
@@ -116,9 +115,11 @@ namespace Managers
             {
                 for (int i = 0; i < Items.Length; i++)
                 {
-                    if (this.Items[i].ItemId==(ushort)itemId)
+                    if (this.Items[i].ItemId==0)
                     {
+                        this.Items[i].ItemId = (ushort)itemId;
                         this.Items[i].Count = addCount;
+                        break;
                     }
                 }
             }

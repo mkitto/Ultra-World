@@ -13,6 +13,7 @@ namespace Services
     {
         public delegate bool StatusNotifyHandler(NStatus status);
         Dictionary<StatusType, StatusNotifyHandler> eventMap = new Dictionary<StatusType, StatusNotifyHandler>();
+        private HashSet<StatusNotifyHandler> handles = new HashSet<StatusNotifyHandler>();
 
         public StatusService()
         {
@@ -32,6 +33,9 @@ namespace Services
 
         public void RegisterStatusNotify(StatusType function, StatusNotifyHandler action)
         {
+            if(handles.Contains(action))
+                return;
+
             if (!eventMap.ContainsKey(function))
             {
                 eventMap[function] = action;
@@ -40,6 +44,8 @@ namespace Services
             {
                 eventMap[function] += action;
             }
+
+            handles.Add(action);
         }
         private void OnStatusNotify(object sender, StatusNotify notify)
         {
@@ -51,13 +57,18 @@ namespace Services
 
         private void Notify(NStatus status)
         {
-            if (status.Action == StatusAction.Add)
+            if (status.Type == StatusType.Money)
             {
-                User.Instance.AddGold(status.Value);
-            }
-            else if (status.Action == StatusAction.Delete)
-            {
-                User.Instance.AddGold(-status.Value);
+
+
+                if (status.Action == StatusAction.Add)
+                {
+                    User.Instance.AddGold(status.Value);
+                }
+                else if (status.Action == StatusAction.Delete)
+                {
+                    User.Instance.AddGold(-status.Value);
+                }
             }
 
             StatusNotifyHandler handler;

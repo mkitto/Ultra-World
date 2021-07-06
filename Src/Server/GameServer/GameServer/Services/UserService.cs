@@ -136,6 +136,7 @@ namespace GameServer.Services
                 MapPosY = 4000,
                 MapPosZ = 820,
                 Gold = 100000, //初始10W金币
+                Equips = new byte[28],
             };
             //背包初始化，为角色创建一个背包
             var bag = new TCharacterBag();
@@ -145,6 +146,20 @@ namespace GameServer.Services
             character.Bag = DBService.Instance.Entities.CharacterBags.Add(bag);
 
             character = DBService.Instance.Entities.Characters.Add(character);
+            character.Items.Add(new TCharacterItem()
+            {
+                Owner = character,
+                ItemID = 1,
+                ItemCount = 20,
+
+            });
+            character.Items.Add(new TCharacterItem()
+            {
+                Owner = character,
+                ItemID = 2,
+                ItemCount = 20,
+            });
+
             //写入数据
             //DBService.Instance.Entities.Characters.Add(character);
             sender.Session.User.Player.Characters.Add(character);

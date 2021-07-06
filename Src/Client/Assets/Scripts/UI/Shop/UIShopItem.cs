@@ -14,11 +14,9 @@ public class UIShopItem : MonoBehaviour,ISelectHandler
     public Text title;
 
     public Text price;
-
+    public Text LimitClass;
     public Text count;
-
     public Image background;
-
     public Sprite normalBg;
     public Sprite selectedBg;
 
@@ -47,8 +45,9 @@ public class UIShopItem : MonoBehaviour,ISelectHandler
         this.item = DataManager.Instance.Items[this.ShopItem.ItemID];
 
         this.title.text = this.item.Name;
-        this.count.text = ShopItem.Count.ToString();
+        this.count.text ="x"+ ShopItem.Count.ToString();
         this.price.text = ShopItem.Price.ToString();
+        this.LimitClass.text = this.item.LimitClass.ToString();
         this.icon.overrideSprite = Resloader.Load<Sprite>(item.Icon);
     }
     //实现接口，当鼠标选中时调用该方法

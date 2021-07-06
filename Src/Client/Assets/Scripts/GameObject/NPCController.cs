@@ -83,7 +83,7 @@ public class NPCController : MonoBehaviour
 
     private void OnMouseDown()
     {
-        //NPCManager.Instance.Interactive(npc);//通过npc的类型执行TestManager注册给NPCManager的字典的委托：打开不同种类的窗口
+        NPCManager.Instance.Interactive(npc);//通过npc的类型执行TestManager注册给NPCManager的字典的委托：打开不同种类的窗口
         Interactive();
         //Debug.LogError(this.name);
     }

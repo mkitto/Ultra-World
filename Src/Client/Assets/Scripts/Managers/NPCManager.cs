@@ -1,5 +1,6 @@
 ﻿using Common.Data;
 using System.Collections.Generic;
+using SkillBridge.Message;
 
 namespace Managers
 {
@@ -85,5 +86,9 @@ namespace Managers
 
             return eventMap[npc.Function](npc);
         }
+        public void OnUnEquipItem(EquipSlot slot)
+        {
+
+        } 
     }
 }

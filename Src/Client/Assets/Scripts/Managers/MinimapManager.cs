@@ -38,7 +38,7 @@ namespace Managers
         /// <returns></returns>
         public Sprite LoadCurrentMinimap()
         {
-            return Resloader.Load<Sprite>("UI/MiniMap/" + User.Instance.CurrentMapData.MiniMap);
+            return Resloader.Load<Sprite>("UI/Minimap/" + User.Instance.CurrentMapData.MiniMap);
         }
 
         //更新MiniMap

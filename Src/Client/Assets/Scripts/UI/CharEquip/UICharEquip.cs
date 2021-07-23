@@ -9,7 +9,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
-class UICharEquip:UIWindow
+public class UICharEquip:UIWindow
 {
     public Text title;
     public Text money;

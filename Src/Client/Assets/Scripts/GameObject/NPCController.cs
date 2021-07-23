@@ -15,6 +15,8 @@ public class NPCController : MonoBehaviour
     private bool inInteractive = false;
 
     private NpcDefine npc;
+
+    NpcQuestStatus questStatus;
     void Start()
     {
         renderer = this.gameObject.GetComponentInChildren<SkinnedMeshRenderer>();
@@ -22,11 +24,29 @@ public class NPCController : MonoBehaviour
         orignColor = renderer.sharedMaterial.color;//初始化的时候，将当前的颜色先保存了一份
         npc = NPCManager.Instance.GetNpcDefine(npcID);
         this.StartCoroutine(Actions());
+        RefreshNpcStatus();
+        QuestManager.Instance.onQuestStatusChanged += OnQuestStatusChanged;
+        
     }
 
-    void Update()
+    private void OnQuestStatusChanged(Quest quest)
     {
+        this.RefreshNpcStatus();
+    }
 
+    private void RefreshNpcStatus()
+    {
+        questStatus = QuestManager.Instance.GetQuestStatusByNpc(this.npcID);
+        UIWorldElementManager.Instance.AddNpcQuestStatus(this.transform,questStatus);
+    }
+
+    private void OnDestroy()
+    {
+        QuestManager.Instance.onQuestStatusChanged -= OnQuestStatusChanged;
+        if (UIWorldElementManager.Instance!=null)
+        {
+            UIWorldElementManager.Instance.RemoveNpcQuestStatus(this.transform);
+        }
     }
     //随机动作 写死循环，永远不会卡住主线程
     IEnumerator Actions()

@@ -27,7 +27,7 @@ public class UINameBar : MonoBehaviour
     {
         this.UpdateInfo();
  
-        this.transform.forward = Camera.main.transform.forward;
+        //this.transform.forward = Camera.main.transform.forward;
         //this.transform.LookAt(Camera.main.transform,Vector3.up);
 
     }
